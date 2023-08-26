@@ -1,6 +1,6 @@
 import * as mysql from 'mysql2/promise';
 import { ResultSetHeader } from 'mysql2/promise';
-import {User} from './ModelsTs/userModel';
+import {UserModule} from '../Modules/UserModule';
 class UserModel {
   private db: mysql.Pool;
 
@@ -14,16 +14,15 @@ class UserModel {
     });
   }
   
-  async getUserForGmail(gmail: string): Promise<User | null> {
+  async getUserForGmail(gmail: string): Promise<UserModule | null> {
     try {
       const [row] = await this.db.execute<mysql.RowDataPacket[]>(
         'SELECT * FROM usuarios WHERE gmail=?', [gmail]
       );
-
       if (!row[0]) { //A UN QUE ME VENGA UN ARRAY Y YO SEPA QUE ME VA AVENIR UN SOLO OBJETO TENGO QUE PONER [0]
         return null;
       } else {
-        const user: User = row[0] as User;
+        const user: UserModule = row[0] as UserModule;
         return user;
       }
     } catch (error) {
@@ -33,16 +32,16 @@ class UserModel {
   }
 
 
-  async deleteUserForGmail(gmail: string) {
+  async deleteUserForGmail(gmail: string):Promise<boolean> {
     try {
       const result = await this.db.execute<ResultSetHeader>(
         'DELETE FROM usuarios WHERE gmail=?', [gmail]
       );
   
       if (result[0].affectedRows === 1) {
-        console.log('User deleted successfully.');
+           return true;
       } else {
-        console.log('User not found or not deleted.');
+           return false;
       }
     } catch (error) {
       console.error('Error deleting user by gmail:', error);
@@ -50,7 +49,13 @@ class UserModel {
     }
   }
 
-  async updateUserForGmail(id: number, nombre: string, gmail: string, contraseña: string, rol: string) {
+  async updateUserForGmail(
+    id: number,
+    nombre: string,
+    gmail: string,
+    contraseña: string,
+    rol: string
+    ):Promise<boolean> {
     try {
       const result = await this.db.execute<ResultSetHeader>(
         'UPDATE usuarios SET name=?, email=?, password=?, rol=? WHERE id=?', 
@@ -58,9 +63,9 @@ class UserModel {
       );
   
       if (result[0].affectedRows === 1) {
-        console.log('User updated successfully.');
+         return true;
       } else {
-        console.log('User not found or not updated.');
+         return false;
       }
     } catch (error) {
       console.error('Error updating user by gmail:', error);

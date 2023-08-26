@@ -1,6 +1,6 @@
 import * as mysql from 'mysql2/promise';
 import { ResultSetHeader } from 'mysql2/promise';
-import {Game} from '../Models/ModelsTs/gameModel';
+import {GameModule} from '../Modules/GameModule';
 class GameModel {
   private db: mysql.Pool;
 
@@ -15,13 +15,13 @@ class GameModel {
     console.log('Database connection established');
   }
   
-  async getGames(): Promise<Game[] | null> {
+  async getGames(): Promise<GameModule[] | null> {
     try {
       const [rows] = await this.db.execute<mysql.RowDataPacket[]>('SELECT * FROM juegos');
       if(!rows){
         return null
       }else{
-        return rows as Game[];
+        return rows as GameModule[];
       }
     } catch (error) {
       console.error('Error fetching games:', error);
@@ -29,13 +29,13 @@ class GameModel {
     }
   }
 
-  async getGame(id: number): Promise<Game | null>{
+  async getGame(id: number): Promise<GameModule | null>{
     try {
       const [row] = await this.db.execute<mysql.RowDataPacket[]>('SELECT * FROM juegos WHERE id=?', [id]);
       if(!row[0]){
         return null
       }else{
-        return row[0] as Game;
+        return row[0] as GameModule;
       }
     } catch (error) {
       console.error('Error fetching game:', error);
@@ -51,7 +51,7 @@ class GameModel {
     mainImage: string,
     downloadLink: string,
     category: number
-  ): Promise<number> {
+  ): Promise<number | null> {
     try {
       const [result] = await this.db.execute<ResultSetHeader>(
         'INSERT INTO juegos(name, releaseDate, description, price, mainImage, downloadLink, fk_id_category) VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -79,7 +79,6 @@ class GameModel {
         'UPDATE juegos SET name=?, release_date=?, description=?, price=?, main_image=?, download_link=?, fk_id_category=? WHERE id=?',
         [name, releaseDate, description, price, mainImage, downloadLink, category, id]
       );
-  
       if (result[0].affectedRows === 1) {
         return true;
       } else {
@@ -96,7 +95,6 @@ class GameModel {
       const result = await this.db.execute<ResultSetHeader>(
         'DELETE FROM juegos WHERE id=?', [id]
       );
-  
       if (result[0].affectedRows === 1) {
         return true;
       } else {

@@ -1,6 +1,6 @@
 import * as mysql from 'mysql2/promise';
 import { ResultSetHeader } from 'mysql2/promise';
-import { Category } from './ModelsTs/categoryModel';
+import { CategoryModule } from '../Modules/CategoryModule';
 class CategoryModel {
   private db: mysql.Pool;
   constructor() {
@@ -14,13 +14,13 @@ class CategoryModel {
     console.log('Database connection established');
   }
 
-  async getCategories():Promise<Category[] | null> {
+  async getCategories():Promise<CategoryModule[] | null> {
     try {
       const [rows] = await this.db.execute<mysql.RowDataPacket[]>('SELECT * FROM category');
       if(!rows){
          return null
       }else{
-        return rows as Category[]
+        return rows as CategoryModule[]
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -28,13 +28,13 @@ class CategoryModel {
     }
   }
 
-  async getCategory(id:number):Promise<Category | null> {
+  async getCategory(id:number):Promise<CategoryModule | null> {
     try {
       const [rows] = await this.db.execute<mysql.RowDataPacket[]>('SELECT * FROM category WHERE id=?', [id]);
       if(!rows){
         return null
       }else{
-        return rows[0] as Category;
+        return rows[0] as CategoryModule;
       }
     } catch (error) {
       console.error('Error fetching category:', error);
@@ -48,7 +48,7 @@ class CategoryModel {
      if(result[0].affectedRows === 1){
         return false;
      }else{
-       return true;
+        return true;
      }
     } catch (error) {
       console.error('Error updating category:', error);
@@ -60,9 +60,9 @@ class CategoryModel {
     try {
       const [rows] = await this.db.execute<ResultSetHeader>('INSERT INTO category(name) VALUES(?)', [nombre]);
       if(!rows){
-        return null
+        return null;
       }else{
-        return rows.insertId
+        return rows.insertId;
       }
     } catch (error) {
       console.error('Error inserting category:', error);
@@ -76,7 +76,7 @@ class CategoryModel {
       if(result[0].affectedRows === 1){
            return false;
       }else{
-          return true;
+           return true;
       }
 
     } catch (error) {

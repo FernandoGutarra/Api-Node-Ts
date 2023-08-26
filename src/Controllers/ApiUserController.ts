@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import UserModel from "../Models/UserModel"; // Asegúrate de importar el modelo adecuado
+import UserModel from "../Modules/UserModel"; // Asegúrate de importar el modelo adecuado
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 

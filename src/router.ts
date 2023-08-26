@@ -1,5 +1,6 @@
 import express from 'express';
 import multer from 'multer';
+import { Request, Response, NextFunction } from 'express';
 import ApiGameController from './Controllers/ApiGameController';
 import ApiCategoryController from './Controllers/ApiCategoryController';
 import ApiUserController from './Controllers/ApiUserController';
@@ -17,27 +18,27 @@ const upload = multer({ storage });
 // Prefijo "/api" para todas las rutas de la API
 
 // Definir las rutas para ApiGameController
-router.get('/api/games', verifyToken,(req,res) => gameController.getGames(res));
-router.get('/api/game/:ID', verifyToken, (req,res) => gameController.getGame(req,res));
-router.delete('/api/game/:ID', verifyToken,(req,res) => gameController.deleteGame(req,res));
-router.put('/api/game/:ID', verifyToken, upload.single('mainImage'), (req, res) => {
+router.get('/api/games', verifyToken, (req: Request, res: Response) => gameController.getGames(res));
+router.get('/api/game/:ID', verifyToken, (req: Request, res: Response) => gameController.getGame(req, res));
+router.delete('/api/game/:ID', verifyToken, (req: Request, res: Response) => gameController.deleteGame(req, res));
+router.put('/api/game/:ID', verifyToken, upload.single('mainImage'), (req: Request, res: Response) => {
   gameController.updateGame(req, res);
 });
-router.post('/api/game', verifyToken, upload.single('mainImage'), (req,res) => {
-gameController.insertGame(req , res)
+router.post('/api/game', verifyToken, upload.single('mainImage'), (req: Request, res: Response) => {
+  gameController.insertGame(req, res);
 });
  
-router.get('/api/categories', verifyToken, (req, res) => categorieController.getCategories(res));
-router.get('/api/category/:ID', verifyToken,(req , res) => categorieController.getCat(req,res));
-router.delete('/api/category/:ID', verifyToken,(req , res) => categorieController.deleteCat(req,res));
-router.put('/api/category/:ID', verifyToken, (req , res) =>categorieController.updateCat(req,res));
-router.post('/api/category', verifyToken, (req ,res ) =>categorieController.updateCat(req,res));
+router.get('/api/categories', verifyToken, (req: Request, res: Response) => categorieController.getCategories(res));
+router.get('/api/category/:ID', verifyToken, (req: Request, res: Response) => categorieController.getCat(req, res));
+router.delete('/api/category/:ID', verifyToken, (req: Request, res: Response) => categorieController.deleteCat(req, res));
+router.put('/api/category/:ID', verifyToken, (req: Request, res: Response) => categorieController.updateCat(req, res));
+router.post('/api/category', verifyToken, (req: Request, res: Response) => categorieController.insertCat(req, res));
 
 // Definir las rutas para ApiUserController
-router.post('/api/register',(req,res) => userController.verifyRegister(req,res));
-router.post('/api/login', (req,res) => userController.verifyLogin(req,res));
+router.post('/api/register', (req: Request, res: Response) => userController.verifyRegister(req, res));
+router.post('/api/login', (req: Request, res: Response) => userController.verifyLogin(req, res));
 
-router.use('/api', (req, res, next) => {
+router.use('/api', (req: Request, res: Response, next: NextFunction) => {
   // Middleware para verificar la ruta
   if (!req.originalUrl.startsWith('/api')) {
     return res.status(404).json({ message: 'Ruta no encontrada' });
@@ -46,4 +47,3 @@ router.use('/api', (req, res, next) => {
 });
 
 export default router;
-

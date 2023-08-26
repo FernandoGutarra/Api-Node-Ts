@@ -1,4 +1,4 @@
-export interface Game {
+export interface GameModule {
     id: number,
     name: string,
     releaseDate: string,

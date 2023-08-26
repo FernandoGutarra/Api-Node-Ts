@@ -3,6 +3,7 @@ import { admin } from '../firebaseConfig';
 import { Readable } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 import GameModel from '../Models/GameModel';
+import { GameModule } from '../Modules/GameModule';
 
 class ApiGameController {
   private model: GameModel;
@@ -37,7 +38,7 @@ class ApiGameController {
         this.sendResponse(res,400, {message: "El ID del juego no es válido"});
         return;
       }
-      const game = await this.model.getGame(id);
+      const game:GameModule | null = await this.model.getGame(id);
       if (game) {
         this.sendResponse(res,200,game);
       } else {
@@ -52,7 +53,7 @@ class ApiGameController {
   async deleteGame(req: Request, res: Response) {
     try {
       const id:number = Number(req.params.ID);
-      const game = await this.model.getGame(id);
+      const game:GameModule | null = await this.model.getGame(id);
       if (game) {
         const imageUrl = game.mainImage;
         if (imageUrl) {
@@ -73,7 +74,8 @@ class ApiGameController {
       const id:number = Number(req.params.ID);
       const body = req.body;
       const mainImage:string = body.mainImage;
-      const game = await this.model.getGame(id);
+      const game:GameModule | null = await this.model.getGame(id);
+      console.log(game);
       if(game){
         const imageUrl = game.mainImage;
         await this.deleteImageFromFirebaseStorage(imageUrl);
@@ -95,7 +97,7 @@ class ApiGameController {
     try {
       const body = req.body;
       const mainImage = req.file;
-      const token = await this.uploadImageToFirebaseStorage(mainImage);
+      const token:string = await this.uploadImageToFirebaseStorage(mainImage);
      if(token){
       const id = await this.model.insertGame(
         body.name,
